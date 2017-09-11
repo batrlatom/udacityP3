@@ -52,7 +52,7 @@ There were about 52 000 data points, each consisted from steering angle and tree
 
 
 # 5. Overfitting reduction
-The model contains dropout layer in order to reduce overfitting. I used 50% dropout prob rate. Second technique to prevent overfitting was to augment sourced data. Data was randomly rotated and translated, along with the adding random shadow and brightness. Model was trained on datasets over both tracks.
+The model contains dropout layer in order to reduce overfitting. I used 50% dropout prob rate. Second technique to prevent overfitting was to augment sourced data. Data was randomly rotated and translated. Model was trained on datasets over both tracks.
 
 
 
