@@ -15,7 +15,7 @@ INPUT_SHAPE = (IMAGE_HEIGHT, IMAGE_WIDTH, IMAGE_CHANNELS)
 ######################################################################################
 def pandas_split(X, y):
     msk = np.random.rand(len(X)) < 0.9
-    
+
     X_train = X[msk]
     X_valid = X[~msk]
 
@@ -59,7 +59,7 @@ def resize_normalize(image):
 ######################################################################################
 ######################################################################################
 
-def choose_image(data_dir, center, left, right, steering_angle):
+def get_image(data_dir, center, left, right, steering_angle):
     """
     will randomly choose and load image from one of three cameras and provide adjusted steering angle
     """
@@ -74,7 +74,7 @@ def choose_image(data_dir, center, left, right, steering_angle):
 ######################################################################################
 #   flip image from left to right and change steering angle accordingly
 ######################################################################################
-def random_flip(image, steering_angle):
+def flip(image, steering_angle):
    
     if np.random.rand() < 0.5:
         image = cv2.flip(image, 1)
@@ -85,10 +85,7 @@ def random_flip(image, steering_angle):
 ######################################################################################
 #   translate image and change steering angle according the distortion
 ######################################################################################
-def random_translate(image, steering_angle, range_x, range_y):
-    """
-    Randomly shift the image virtially and horizontally (translation).
-    """
+def translate(image, steering_angle, range_x, range_y):
     trans_x = range_x * (np.random.rand() - 0.5)
     trans_y = range_y * (np.random.rand() - 0.5)
     steering_angle += trans_x * 0.002
@@ -98,54 +95,14 @@ def random_translate(image, steering_angle, range_x, range_y):
     return image, steering_angle
 
 
-######################################################################################
-#   Generates and adds random shadow
-######################################################################################
-def random_shadow(image):   
-    # (x1, y1) and (x2, y2) forms a line
-    # xm, ym gives all the locations of the image
-    x1, y1 = IMAGE_WIDTH * np.random.rand(), 0
-    x2, y2 = IMAGE_WIDTH * np.random.rand(), IMAGE_HEIGHT
-    xm, ym = np.mgrid[0:IMAGE_HEIGHT, 0:IMAGE_WIDTH]
-
-    # mathematically speaking, we want to set 1 below the line and zero otherwise
-    # Our coordinate is up side down.  So, the above the line: 
-    # (ym-y1)/(xm-x1) > (y2-y1)/(x2-x1)
-    # as x2 == x1 causes zero-division problem, we'll write it in the below form:
-    # (ym-y1)*(x2-x1) - (y2-y1)*(xm-x1) > 0
-    mask = np.zeros_like(image[:, :, 1])
-    mask[(ym - y1) * (x2 - x1) - (y2 - y1) * (xm - x1) > 0] = 1
-
-    # choose which side should have shadow and adjust saturation
-    cond = mask == np.random.randint(2)
-    s_ratio = np.random.uniform(low=0.2, high=0.5)
-
-    # adjust Saturation in HLS(Hue, Light, Saturation)
-    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
-    hls[:, :, 1][cond] = hls[:, :, 1][cond] * s_ratio
-    return cv2.cvtColor(hls, cv2.COLOR_HLS2RGB)
-
-######################################################################################
-#   Randomly adjust brightness of the image. HSV (Hue, Saturation, Value) is also called HSB ('B' for Brightness).
-######################################################################################
-def random_brightness(image):
-    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
-    ratio = 1.0 + 0.4 * (np.random.rand() - 0.5)
-    hsv[:,:,2] =  hsv[:,:,2] * ratio
-    return cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
 
 ######################################################################################
 #   Augumented image and adjust steering angle accordingly. Steering angle is associated with the image from central camera
 ######################################################################################
 def augument(data_dir, center, left, right, steering_angle, range_x=100, range_y=10):
-    # randomly choosing image from one camera, add random steering and translation
-    image, steering_angle = choose_image(data_dir, center, left, right, steering_angle) 
-    image, steering_angle = random_flip(image, steering_angle)
-    image, steering_angle = random_translate(image, steering_angle, range_x, range_y)
-    
-    # we are adding random shadow and brightness to get additional augmentation
-    image = random_shadow(image)
-    image = random_brightness(image)
+    image, steering_angle = get_image(data_dir, center, left, right, steering_angle) 
+    image, steering_angle = flip(image, steering_angle)
+    image, steering_angle = translate(image, steering_angle, range_x, range_y)
     
 
     return image, steering_angle
