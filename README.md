@@ -14,6 +14,7 @@ To complete the project, we have to meet several goals:
 [//]: # (Image References)
 
 [image1]: ./examples/drivenet.png "Model Visualization"
+[image2]: ./examples/stats.png "Train set histogram"
 [image3]: ./examples/video.gif "Run video"
 
 
@@ -49,6 +50,12 @@ I aquired data from both tracks, using ps4 controller in the following way:
 So to capture good driving behavior, I first recorded three laps on track one using center lane driving and two laps using the same technique, but driving in the opposite direction. Same was done for the second track. Next, I tried to get data which cover recovering from the side of the road back to the center. I created few dozen of such data samples for each track.
 
 There were about 52 000 data points, each consisted from steering angle and tree camera images ( left, right, center ). I split data into training and validation sets in the 80% / 20% ration directly with the pandas lib ( file utils.py : pandas_split(X, y)) . Data was shuffled by creating masking array and splitting data into two distinct set according the mask.
+
+
+![stats][image2]
+
+
+You can see, that data distribution is little uneven, it will be fine to aquire more data with the steering to the right.
 
 
 # 5. Overfitting reduction
