@@ -14,7 +14,7 @@ To complete the project, we have to meet several goals:
 [//]: # (Image References)
 
 [image1]: ./examples/drivenet.png "Model Visualization"
-[image2]: ./examples/stats.png "Train set histogram"
+[image2]: ./examples/stats_train.png "Train set histogram"
 [image3]: ./examples/video.gif "Run video"
 
 
